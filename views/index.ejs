@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel de Dívidas</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#f5f7fb;margin:0;color:#1f2937}
+    .wrap{max-width:1100px;margin:0 auto;padding:20px}
+    .top{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+    .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:20px 0}
+    .card{background:#fff;padding:16px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.06)}
+    table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.06)}
+    th,td{padding:12px;border-bottom:1px solid #eef2f7;text-align:left;font-size:14px;vertical-align:top}
+    th{background:#f8fafc}
+    .actions form{display:inline-block;margin:2px}
+    button{border:0;padding:8px 10px;border-radius:10px;cursor:pointer;font-weight:700}
+    .green{background:#dcfce7}.yellow{background:#fef3c7}.red{background:#fee2e2}.blue{background:#dbeafe}
+    .toolbar,.newbox{background:#fff;padding:16px;border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.06);margin-bottom:16px}
+    input,select{padding:10px;border:1px solid #d9dfe8;border-radius:10px}
+    .inline{display:flex;gap:10px;flex-wrap:wrap}
+    a{color:#1f6feb;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1 style="margin:0">Painel de Dívidas</h1>
+        <div style="color:#586274">Edite pelo WhatsApp ou por este painel.</div>
+      </div>
+      <div><a href="/logout">Sair</a></div>
+    </div>
+
+    <div class="toolbar">
+      <form method="GET" action="/" class="inline">
+        <input type="month" name="month" value="<%= month %>" />
+        <button class="blue" type="submit">Ver mês</button>
+      </form>
+    </div>
+
+    <div class="cards">
+      <div class="card"><strong>Total do mês</strong><div><%= formatBRL(summary.total) %></div></div>
+      <div class="card"><strong>Já pago</strong><div><%= formatBRL(summary.paid) %></div></div>
+      <div class="card"><strong>Falta pagar</strong><div><%= formatBRL(summary.pending) %></div></div>
+      <div class="card"><strong>Qtd. de contas</strong><div><%= summary.count %></div></div>
+    </div>
+
+    <div class="newbox">
+      <h3>Adicionar nova dívida</h3>
+      <form method="POST" action="/panel/add" class="inline">
+        <input type="text" name="description" placeholder="Descrição" required />
+        <input type="text" name="amount" placeholder="Valor ex: 350,90" required />
+        <input type="text" name="due_date" placeholder="Vencimento ex: 10/04/2026" />
+        <button class="blue" type="submit">Adicionar</button>
+      </form>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Descrição</th>
+          <th>Valor</th>
+          <th>Pago</th>
+          <th>Vencimento</th>
+          <th>Status</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% debts.forEach(function(d) { %>
+          <tr>
+            <td>#<%= d.id %></td>
+            <td><%= d.description %></td>
+            <td><%= formatBRL(d.amount) %></td>
+            <td><%= formatBRL(d.paid_amount) %></td>
+            <td><%= formatDateBR(d.due_date) %></td>
+            <td><%= d.status %></td>
+            <td class="actions">
+              <% if (d.status !== 'pago') { %>
+                <form method="POST" action="/panel/pay/<%= d.id %>"><button class="green" type="submit">Pagar</button></form>
+              <% } else { %>
+                <form method="POST" action="/panel/undo/<%= d.id %>"><button class="yellow" type="submit">Desfazer</button></form>
+              <% } %>
+              <form method="POST" action="/panel/delete/<%= d.id %>" onsubmit="return confirm('Apagar dívida?')"><button class="red" type="submit">Apagar</button></form>
+            </td>
+          </tr>
+        <% }) %>
+        <% if (!debts.length) { %>
+          <tr><td colspan="7">Nenhuma dívida cadastrada neste mês.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

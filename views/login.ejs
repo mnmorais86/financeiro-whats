@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Dívidas WhatsApp</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#f4f7fb;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}
+    .box{background:#fff;padding:28px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.08);width:100%;max-width:360px}
+    input{width:100%;padding:12px;border:1px solid #d9dfe8;border-radius:10px;margin-bottom:12px;box-sizing:border-box}
+    button{width:100%;padding:12px;border:0;border-radius:10px;background:#1f6feb;color:#fff;font-weight:700;cursor:pointer}
+    .error{background:#ffe5e5;color:#a80000;padding:10px;border-radius:10px;margin-bottom:12px}
+    h1{font-size:22px;margin-top:0}
+    p{color:#586274}
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Controle de Dívidas</h1>
+    <p>Entre para ver e editar as dívidas.</p>
+    <% if (error) { %>
+      <div class="error"><%= error %></div>
+    <% } %>
+    <form method="POST" action="/login">
+      <input type="text" name="user" placeholder="Usuário" required />
+      <input type="password" name="password" placeholder="Senha" required />
+      <button type="submit">Entrar</button>
+    </form>
+  </div>
+</body>
+</html>
